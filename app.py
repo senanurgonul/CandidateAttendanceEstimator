@@ -5,9 +5,7 @@ from sklearn.ensemble import RandomForestRegressor
 
 app = Flask(__name__)
 
-# -----------------------
-# VERİYİ YÜKLE VE TEMİZLE
-# -----------------------
+
 df = pd.read_csv("DataKabin.csv", sep=";")
 df["Mülakat Planlanma Tarihi"] = pd.to_datetime(df["Mülakat Planlanma Tarihi"], dayfirst=True)
 df["Gelmeyen Sayısı"] = df["Toplam Gelmesi Planlanan Kişi Sayısı"] - df["Planlandığı Gün Gelen Kişi Sayısı"]
@@ -15,9 +13,7 @@ df["Yıl"] = df["Mülakat Planlanma Tarihi"].dt.year
 df["Ay"] = df["Mülakat Planlanma Tarihi"].dt.month
 df["Gün"] = df["Mülakat Planlanma Tarihi"].dt.day
 
-# -----------------------
-# MODELİ EĞİT
-# -----------------------
+
 features = ["Yıl", "Ay", "Gün", "Toplam Gelmesi Planlanan Kişi Sayısı"]
 target = "Gelmeyen Sayısı"
 
@@ -27,26 +23,20 @@ y = df[target]
 model = RandomForestRegressor(n_estimators=100, random_state=42)
 model.fit(X, y)
 
-# -----------------------
-# TARİH LİSTESİ OLUŞTUR
-# -----------------------
+
 def tarih_araligini_getir(baslangic, bitis):
     start = datetime.strptime(baslangic, "%Y-%m-%d")
     end = datetime.strptime(bitis, "%Y-%m-%d")
     return [start + timedelta(days=i) for i in range((end - start).days + 1)]
 
-# -----------------------
-# TAHMİN YAP
-# -----------------------
+
 def tahmin_yap(tarih, planlanan):
     yil, ay, gun = tarih.year, tarih.month, tarih.day
     veri = pd.DataFrame([[yil, ay, gun, planlanan]], columns=features)
     tahmin = model.predict(veri)[0]
     return round(tahmin)
 
-# -----------------------
-# FLASK ROUTE
-# -----------------------
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     detaylar = []
@@ -92,8 +82,6 @@ def index():
 
     return render_template("index.html", sonuc=sonuc, detaylar=detaylar)
 
-# -----------------------
-# SUNUCUYU BAŞLAT
-# -----------------------
+
 if __name__ == "__main__":
     app.run(debug=True)
