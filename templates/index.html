@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gelmeyen Kişi Tahmini</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 40px; background-color: #f7f9fc; max-width: 800px; margin: auto; }
+        h1 { color: #2c3e50; text-align: center; }
+        form { background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 20px; }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        input[type="date"], input[type="number"], button {
+            padding: 10px; width: 100%; font-size: 16px;
+            margin-top: 8px; border-radius: 6px; border: 1px solid #ccc;
+        }
+        button {
+            background-color: #3498db; color: white; cursor: pointer;
+            transition: 0.3s; margin-top: 20px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .sonuc {
+            margin-top: 30px; padding: 15px;
+            background-color: #dff0d8; border-left: 6px solid #3c763d;
+            font-size: 17px;
+        }
+        table {
+            margin-top: 30px; width: 100%;
+            border-collapse: collapse; font-size: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd; padding: 10px; text-align: center;
+        }
+        th {
+            background-color: #ecf0f1;
+        }
+    </style>
+</head>
+<body>
+    <h1>📅 Planlanan Günde Gelmeyecek Aday Tahmini</h1>
+
+    {% if not tarih_listesi %}
+        <form method="POST">
+            <label>Başlangıç Tarihi:</label>
+            <input type="date" name="tarih1" required>
+
+            <label>Bitiş Tarihi:</label>
+            <input type="date" name="tarih2" required>
+
+            <button type="submit">Planlananları Girmek İçin Devam Et</button>
+        </form>
+    {% endif %}
+
+    {% if tarih_listesi %}
+        <form method="POST">
+            {% for tarih in tarih_listesi %}
+                <label>{{ tarih.strftime('%d.%m.%Y') }} - Planlanan Kişi Sayısı:</label>
+                <input type="number" name="planlanan_{{ loop.index0 }}" min="0" required>
+                <input type="hidden" name="tarih_{{ loop.index0 }}" value="{{ tarih.strftime('%Y-%m-%d') }}">
+            {% endfor %}
+            <button type="submit" name="submit">Tahmin Et</button>
+        </form>
+    {% endif %}
+
+    {% if sonuc %}
+        <div class="sonuc"><strong>{{ sonuc }}</strong></div>
+    {% endif %}
+
+    {% if detaylar %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Planlanan</th>
+                    <th>Tahmini Gelmeyecek</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for satir in detaylar %}
+                    <tr>
+                        <td>{{ satir.tarih }}</td>
+                        <td>{{ satir.planlanan }}</td>
+                        <td>{{ satir.gelmeyecek }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</body>
+</html>
