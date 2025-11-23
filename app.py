@@ -5,6 +5,7 @@ from sklearn.ensemble import RandomForestRegressor
 
 app = Flask(__name__)
 
+#--------------------
 
 df = pd.read_csv("DataKabin.csv", sep=";")
 df["Mülakat Planlanma Tarihi"] = pd.to_datetime(df["Mülakat Planlanma Tarihi"], dayfirst=True)
@@ -85,3 +86,8 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+#--------------------
+#--------------------
+#--------------------
+#--------------------
